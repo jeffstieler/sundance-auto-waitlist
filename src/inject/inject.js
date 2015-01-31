@@ -14,7 +14,7 @@ var readyStateCheckInterval = setInterval(function() {
 
 var initialize = function() {
 
-	jump_the_gun = 400;
+	jump_the_gun = 200;
 	open_time    = document.querySelector('.wl-state-early > .livetime').dataset.epoch / 1000;
 	join_btn     = document.querySelector('#join-ui > a');
 
@@ -62,7 +62,7 @@ var attachCountdownWatcher = function() {
 
 	screeningTimer = setInterval(function() {
 
-		var now = Math.ceil((new Date).getTime() / 1000) + timer_offset - jump_the_gun;
+		var now = Math.ceil((new Date).getTime() / 1000) + timer_offset + jump_the_gun;
 
 		if ( now > open_time ) {
 
