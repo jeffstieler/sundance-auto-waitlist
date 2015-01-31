@@ -63,7 +63,7 @@ var attachCountdownWatcher = function() {
 	screeningTimer = setInterval(function() {
 
 		var now = Math.ceil((new Date).getTime() / 1000) + timer_offset - jump_the_gun;
-console.log(now, open_time);
+
 		if ( now > open_time ) {
 
 			join_btn.click();
