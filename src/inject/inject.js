@@ -14,7 +14,7 @@ var readyStateCheckInterval = setInterval(function() {
 
 var initialize = function() {
 
-	jump_the_gun = 200;
+	jump_the_gun = 400;
 	open_time    = document.querySelector('.wl-state-early > .livetime').dataset.epoch / 1000;
 	join_btn     = document.querySelector('#join-ui > a');
 
