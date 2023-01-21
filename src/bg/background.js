@@ -1,29 +1,20 @@
-var parseOffsetCookie = function(offset) {
+var parseOffsetCookie = function (offset) {
+  offset = parseInt(offset);
+  offset = isNaN(offset) ? 0 : offset;
 
-	offset = parseInt(offset);
-
-	offset = isNaN(offset) ? 0 : offset;
-
-	return offset;
-
+  return offset;
 };
 
-chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  chrome.cookies.get(
+    {
+      url: "http://ewaitlist.sundance.org/",
+      name: "toff",
+    },
+    function (cookie) {
+      sendResponse({ toff: parseOffsetCookie(cookie.value) });
+    }
+  );
 
-		chrome.cookies.get(
-			{
-				"url": "http://ewaitlist.sundance.org/",
-				"name": "toff"
-			},
-			function(cookie) {
-
-				sendResponse({ "toff": parseOffsetCookie(cookie.value) });
-
-			}
-		);
-
-		return true;
-
-	}
-);
+  return true;
+});
