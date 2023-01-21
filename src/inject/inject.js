@@ -1,82 +1,61 @@
-var timer_offset, jump_the_gun, open_time, join_btn, screeningTimer;
+var timer_offset, open_time, join_btn, screeningTimer;
 
-var readyStateCheckInterval = setInterval(function() {
+var readyStateCheckInterval = setInterval(function () {
+  if (document.readyState === "complete") {
+    clearInterval(readyStateCheckInterval);
 
-	if (document.readyState === "complete") {
-
-		clearInterval(readyStateCheckInterval);
-
-		initialize();
-
-	}
-
+    initialize();
+  }
 }, 10);
 
-var initialize = function() {
+var initialize = function () {
+  open_time =
+    document.querySelector(".wl-state-early .livetime").dataset.epoch / 1000;
+  join_btn = document.querySelector("#join-ui a");
 
-	open_time    = document.querySelector('.wl-state-early .livetime').dataset.epoch / 1000;
-	join_btn     = document.querySelector('#join-ui > a');
+  chrome.runtime.sendMessage({}, function (response) {
+    timer_offset = response.toff;
+  });
 
-	chrome.runtime.sendMessage({}, function(response) {
-
-		timer_offset = response.toff;
-
-		jump_the_gun = ( timer_offset < 0 ) ? ( Math.abs(timer_offset) + 1 ) : 1;
-
-	});
-
-	injectCheckbox();
-
+  injectCheckbox();
 };
 
-var injectCheckbox = function() {
+var injectCheckbox = function () {
+  var container = document.createElement("label");
 
-	var container = document.createElement("label");
+  container.className = "ui-btn";
 
-	container.className = "ui-btn";
+  container.innerHTML =
+    '<span class="ui-btn-inner"><input type="checkbox" id="auto-join"></input>Auto join the waitlist.</span>';
 
-	container.innerHTML = '<span class="ui-btn-inner"><input type="checkbox" id="auto-join"></input>Auto join the waitlist.</span>';
+  container
+    .querySelector("#auto-join")
+    .addEventListener("change", setupAutoWaitlist, true);
 
-	container.querySelector('#auto-join').addEventListener('change', setupAutoWaitlist, true);
+  var attach_to = document.querySelector(".wl-state-early");
 
-	var attach_to = document.querySelector('.wl-state-early');
-
-	attach_to.appendChild(container);
-
+  attach_to.appendChild(container);
 };
 
-var setupAutoWaitlist = function(event) {
-
-	if ( event.target.checked ) {
-
-		attachCountdownWatcher();
-
-	} else {
-
-		removeCountdownWatcher();
-
-	}
-
+var setupAutoWaitlist = function (event) {
+  if (event.target.checked) {
+    attachCountdownWatcher();
+  } else {
+    removeCountdownWatcher();
+  }
 };
 
-var attachCountdownWatcher = function() {
+var attachCountdownWatcher = function () {
+  screeningTimer = setInterval(function () {
+    var now =
+      Math.ceil(new Date().getTime() / 1000) + Math.min(0, timer_offset);
 
-	screeningTimer = setInterval(function() {
-
-		var now = Math.ceil((new Date).getTime() / 1000) + timer_offset + jump_the_gun;
-
-		if ( now > open_time ) {
-
-			join_btn.click();
-
-		}
-
-	}, 200);
-
+    if (now > open_time) {
+      join_btn.click();
+    }
+  }, 200);
 };
 
-var removeCountdownWatcher = function() {
-
-	clearInterval(screeningTimer);
-
+var removeCountdownWatcher = function () {
+  clearInterval(screeningTimer);
 };
